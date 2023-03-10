@@ -2,6 +2,9 @@ package mytexteditor.rpa.editor;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
@@ -32,7 +35,7 @@ class WindowFrame extends JFrame {
 		// to give it a dimension and a position we use the setBounds method
 		// the first parameter receives the view coordinates and the second is the size.
 		setBounds(300, 300, 300, 300);
-		setTitle("MY EDITOR TEXT");
+		setTitle("✩My Editor Text✩");
 
 		/*
 		 * Here, we're going to add the panel method to the window frame so it's
@@ -50,34 +53,103 @@ class WindowFrame extends JFrame {
 class Panel extends JPanel {
 	public Panel() {
 		/*
-		 * --Create a label-- 
-		 * JLabel label = new JLabel("hola mundo"); 
-		 * --Add to panel--
+		 * --Create a label-- JLabel label = new JLabel("hola mundo"); --Add to panel--
 		 * add(label);
 		 */
 		// Here we have created our container where our text boxes will go.
-		//---------------------ÁREA DE TEXTO----------------------------------------
+		// ---------------------MENU-------------------------------------------------
+		// we declare the menu object
+		JPanel panelMenu = new JPanel();
+		// here we are going to declare the tools that the menu interface will have.
+		menu = new JMenuBar();
+		fileMenu = new JMenu("Archivo");
+		editMenu = new JMenu("Editar");
+		selectMenu = new JMenu("Seleccionar");
+		lookMenu = new JMenu("Ver");
+		skinMenu = new JMenu("Apariencia");
+
+		//add the tools to the menu. 
+		//skinMenu is not added to the menu as it is inside the lookMenu.
+		menu.add(fileMenu);
+		menu.add(editMenu);
+		menu.add(selectMenu);
+		menu.add(lookMenu);
+		
+		//File items/options
+		createItem("Nuevo Archivo", "fileMenu", "newFile");
+		createItem("Abrir Archivo", "fileMenu", "openfile");
+		fileMenu.addSeparator();
+		createItem("Guardar", "fileMenu", "savefile");
+		createItem("Guardar como", "fileMenu", "saveAsFile");
+		//Edit items/options
+		createItem("Deshacer", "editMenu", "");
+		createItem("Rehacer", "editMenu", "");
+		editMenu.addSeparator();
+		createItem("Cortar", "editMenu", "");
+		createItem("Copiar", "editMenu", "");
+		createItem("Pegar", "editMenu", "");
+		//Select items/options
+		createItem("Seleccionar Todo", "selectMenu", "");
+		//Look items/options
+		createItem("Numeración", "lookMenu", "");
+		lookMenu.add(skinMenu);
+		createItem("Normal", "skinMenu","");
+		createItem("Negrita", "skinMenu", "");
+		// now let's add this menu to the JPanel
+		panelMenu.add(menu);
+		// --------------------------------------------------------------------------
+		// ---------------------ÁREA DE TEXTO----------------------------------------
+		// add window pane
 		tPane = new JTabbedPane();
 		createPanel();
-		//--------------------------------------------------------------------------
+		// --------------------------------------------------------------------------
+		/*
+		 * Now, let's add the pane to our window. But we place it before the tPane,
+		 * because the tPane contains the text area, so it would go after the options.
+		 */
+		add(panelMenu);
 		add(tPane);
 	}
-	
-	//to create the accesses to these text windows, we will create a method
-	public void createPanel( ) {
-		//container=panel
-		//we instantiate the window container and the text area
+
+	// let's add the tool options
+	public void createItem(String label, String menu, String action) {
+		itemValue = new JMenuItem(label);
+		if (menu.equals("fileMenu")) {
+			fileMenu.add(itemValue);
+		} else if (menu.equals("editMenu")) {
+			editMenu.add(itemValue);
+		} else if (menu.equals("selectMenu")) {
+			selectMenu.add(itemValue);
+		} else if (menu.equals("lookMenu")) {
+			lookMenu.add(itemValue);
+		} else if (menu.equals("skinMenu")) {
+			skinMenu.add(itemValue);
+		}
+	}
+
+	// to create the accesses to these text windows, we will create a method
+	public void createPanel() {
+		// container=panel
+		// we instantiate the window container and the text area
 		window = new JPanel();
 		textArea = new JTextPane();
-		
-		//we put the text area inside the window container
+
+		// we put the text area inside the window container
 		window.add(textArea);
-		//now, we place this in tPane, which will take care of placing it in the form of tabs.
-		tPane.addTab("title",window);
+		// now, we place this in tPane, which will take care of placing it in the form
+		// of tabs.
+		tPane.addTab("title", window);
 	}
+
+	// ----------------CREATE
+	// OBJECTS------------------------------------------------
 	private JTabbedPane tPane;
-	//panel where our text window will go
+	// panel where our text window will go
 	private JPanel window;
-	//now, the tools to create a text area
+	// now, the tools to create a text area
 	private JTextPane textArea;
+	// here we put the special container, the tools and its options
+	private JMenuBar menu;
+	private JMenu fileMenu, editMenu, selectMenu, lookMenu, skinMenu;
+	private JMenuItem itemValue;
 }
