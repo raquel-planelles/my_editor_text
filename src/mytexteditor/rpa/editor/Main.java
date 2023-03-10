@@ -9,6 +9,9 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
 
+import java.awt.event.*;
+
+
 public class Main {
 
 	public static void main(String[] args) {
@@ -101,7 +104,6 @@ class Panel extends JPanel {
 		// ---------------------ÁREA DE TEXTO----------------------------------------
 		// add window pane
 		tPane = new JTabbedPane();
-		createPanel();
 		// --------------------------------------------------------------------------
 		/*
 		 * Now, let's add the pane to our window. But we place it before the tPane,
@@ -116,7 +118,23 @@ class Panel extends JPanel {
 		itemValue = new JMenuItem(label);
 		if (menu.equals("fileMenu")) {
 			fileMenu.add(itemValue);
-		} else if (menu.equals("editMenu")) {
+			if(action.equals("newFile")) {		
+				//add event/item to new file option under Archivo
+				//The addActionListener method takes the ActionListener interface as a parameter.
+				itemValue.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						// TODO Auto-generated method stub
+						createPanel();
+						
+					}
+					
+				});
+			}
+		} 
+		
+		else if (menu.equals("editMenu")) {
 			editMenu.add(itemValue);
 		} else if (menu.equals("selectMenu")) {
 			selectMenu.add(itemValue);
