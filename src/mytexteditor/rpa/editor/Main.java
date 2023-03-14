@@ -1,17 +1,8 @@
 package mytexteditor.rpa.editor;
 
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextPane;
-
+import javax.swing.*;
 import java.awt.event.*;
+
 import java.io.File;
 import java.nio.file.FileStore;
 import java.nio.file.Files;
