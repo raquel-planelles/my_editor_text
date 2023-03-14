@@ -2,8 +2,8 @@ package mytexteditor.rpa.editor;
 
 import javax.swing.*;
 import java.awt.event.*;
+import java.io.*;
 
-import java.io.File;
 import java.nio.file.FileStore;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -159,23 +159,44 @@ class Panel extends JPanel {
 						 * professional, the ==0 or 1 is not.
 						 */
 						if (result == JFileChooser.APPROVE_OPTION) {
-							System.out.println("Cancel");
-
 							try {
-								boolean pathOn = false;
-								// get file
-								// File is equal to its empty constructor
-								File f = new File("");
-								// this method will return an object of type file and we will store it in f, an
-								// object of type File.
-								f = fileSelector.getSelectedFile();
-								// to check if it works, we print f with getPat() which gets the path where the
-								// file is located.
-								System.out.println(f.getPath());
-							} catch (Exception e1) {
-								// TODO: handle exception
+								boolean pathExists = false;
+								// i must be less than the number of panels there are
+								// this method returns the number of panels we have open.
+								for (int i = 0; i < tPane.getTabCount(); i++) {
+									/*
+									 * get file // File is equal to its empty constructor //File f = new File("");
+									 * // this method will return an object of type file and we will store it in f,
+									 * an // object of type File. // this method will return an object of type file
+									 * and we will store it in f, an object of type File.
+									 */
+									File f = fileSelector.getSelectedFile();
+									// if the file stored in the file list is the same as the file we are trying to
+									// open
+									// if this file we are trying to open is the same as the file we have stored,
+									// then we will tell it that it already exists.
+									if (listFile.get(i).getPath().equals(f.getPath()))
+										pathExists = true;
+								}
+
+								if (!pathExists) {
+									File openFile = fileSelector.getSelectedFile();
+									// add to the list of files
+									listFile.set(tPane.getSelectedIndex(), openFile);
+
+									FileReader entry = new FileReader(
+											listFile.get(tPane.getSelectedIndex()).getPath());
+									
+									BufferedReader miBuffer = new BufferedReader(entry);
+									String line = "";
+									String title = listFile.get(tPane.getSelectedIndex()).getName();
+
+								}
+							} catch (IOException e1) {
+								e1.printStackTrace();
 							}
 						}
+
 					}
 				});
 
