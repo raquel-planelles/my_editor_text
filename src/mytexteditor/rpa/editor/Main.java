@@ -1,16 +1,21 @@
 package mytexteditor.rpa.editor;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
 
 import java.awt.event.*;
-
+import java.io.File;
+import java.nio.file.FileStore;
+import java.nio.file.Files;
+import java.util.ArrayList;
 
 public class Main {
 
@@ -71,32 +76,32 @@ class Panel extends JPanel {
 		lookMenu = new JMenu("Ver");
 		skinMenu = new JMenu("Apariencia");
 
-		//add the tools to the menu. 
-		//skinMenu is not added to the menu as it is inside the lookMenu.
+		// add the tools to the menu.
+		// skinMenu is not added to the menu as it is inside the lookMenu.
 		menu.add(fileMenu);
 		menu.add(editMenu);
 		menu.add(selectMenu);
 		menu.add(lookMenu);
-		
-		//File items/options
+
+		// File items/options
 		createItem("Nuevo Archivo", "fileMenu", "newFile");
 		createItem("Abrir Archivo", "fileMenu", "openfile");
 		fileMenu.addSeparator();
 		createItem("Guardar", "fileMenu", "savefile");
 		createItem("Guardar como", "fileMenu", "saveAsFile");
-		//Edit items/options
+		// Edit items/options
 		createItem("Deshacer", "editMenu", "");
 		createItem("Rehacer", "editMenu", "");
 		editMenu.addSeparator();
 		createItem("Cortar", "editMenu", "");
 		createItem("Copiar", "editMenu", "");
 		createItem("Pegar", "editMenu", "");
-		//Select items/options
+		// Select items/options
 		createItem("Seleccionar Todo", "selectMenu", "");
-		//Look items/options
+		// Look items/options
 		createItem("Numeración", "lookMenu", "");
 		lookMenu.add(skinMenu);
-		createItem("Normal", "skinMenu","");
+		createItem("Normal", "skinMenu", "");
 		createItem("Negrita", "skinMenu", "");
 		// now let's add this menu to the JPanel
 		panelMenu.add(menu);
@@ -104,6 +109,12 @@ class Panel extends JPanel {
 		// ---------------------ÁREA DE TEXTO----------------------------------------
 		// add window pane
 		tPane = new JTabbedPane();
+
+		// we still need to call listFile and the rest of the lists.
+		listTextArea = new ArrayList<JTextPane>();
+		listScroll = new ArrayList<JScrollPane>();
+		listFile = new ArrayList<File>();
+
 		// --------------------------------------------------------------------------
 		/*
 		 * Now, let's add the pane to our window. But we place it before the tPane,
@@ -118,20 +129,68 @@ class Panel extends JPanel {
 		itemValue = new JMenuItem(label);
 		if (menu.equals("fileMenu")) {
 			fileMenu.add(itemValue);
-			if(action.equals("newFile")) {		
-				//add event/item to new file option under Archivo
-				//The addActionListener method takes the ActionListener interface as a parameter.
+			if (action.equals("newFile")) {
+				// add event/item to new file option under Archivo
+				// The addActionListener method takes the ActionListener interface as a
+				// parameter.
 				itemValue.addActionListener(new ActionListener() {
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						// TODO Auto-generated method stub
-						createPanel();	
+						createPanel();
 					}
 				});
+			} else if (action.equals("openfile")) {
+				itemValue.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						// TODO Auto-generated method stub
+						/*
+						 * OPEN FILE: Here we use a java method to open a new window and the
+						 * fileSelector constructor to take the option to open files and directories.
+						 * This can be found in the docs.oracle.com documentation.
+						 */
+						createPanel();
+						JFileChooser fileSelector = new JFileChooser();
+						fileSelector.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+						/*
+						 * the latter has to be stored in an int because that's what its info says in
+						 * the oracle documents
+						 * fileSelector.showOpenDialog(listTextArea.get(tPane.getSelectedIndex()));
+						 */
+						int result = fileSelector.showOpenDialog(listTextArea.get(tPane.getSelectedIndex()));
+
+						/*
+						 * instead of figuring out what the open or cancel button equals (1,0) Java
+						 * already gives us variables with those results so we use them. This is
+						 * professional, the ==0 or 1 is not.
+						 */
+						if (result == JFileChooser.APPROVE_OPTION) {
+							System.out.println("Cancel");
+
+							try {
+								boolean pathOn = false;
+								// get file
+								// File is equal to its empty constructor
+								File f = new File("");
+								// this method will return an object of type file and we will store it in f, an
+								// object of type File.
+								f = fileSelector.getSelectedFile();
+								// to check if it works, we print f with getPat() which gets the path where the
+								// file is located.
+								System.out.println(f.getPath());
+							} catch (Exception e1) {
+								// TODO: handle exception
+							}
+						}
+					}
+				});
+
 			}
-		} 
-		
+		}
+
 		else if (menu.equals("editMenu")) {
 			editMenu.add(itemValue);
 		} else if (menu.equals("selectMenu")) {
@@ -148,22 +207,52 @@ class Panel extends JPanel {
 		// container=panel
 		// we instantiate the window container and the text area
 		window = new JPanel();
-		textArea = new JTextPane();
+
+		/*
+		 * This constructor, in its interior, receives a text string that the user gives
+		 * us, but as we don't know what it is, we leave it empty.
+		 */
+		listFile.add(new File(""));
+		// here we have added our text area
+		// here we have added our text area.
+		listTextArea.add(new JTextPane());
+		/*
+		 * here we tell it to add a new scroll to the scroll list, and that this scroll
+		 * will be linked to this text area that is at position 0.
+		 */
+		listScroll.add(new JScrollPane(listTextArea.get(panelCounter)));
 
 		// we put the text area inside the window container
-		window.add(textArea);
+		window.add(listScroll.get(panelCounter));
+
 		// now, we place this in tPane, which will take care of placing it in the form
 		// of tabs.
 		tPane.addTab("title", window);
+		// this is so that when we click on new file, it runs in a different tab and not
+		// in the same panel.
+		tPane.setSelectedIndex(panelCounter);
+		// here we tell the counter to keep adding up so that it is not always at 0.
+		panelCounter++;
+		panelExists = true;
 	}
 
 	// ----------------CREATE
 	// OBJECTS------------------------------------------------
+	// container of all Pane
 	private JTabbedPane tPane;
 	// panel where our text window will go
 	private JPanel window;
-	// now, the tools to create a text area
-	private JTextPane textArea;
+	/*
+	 * we need an object for the text area, but if we put only one, the program will
+	 * interact with the last one created. To solve this, we'll do an arrayList()
+	 * private JTextPane testArea;
+	 */
+	// This variable will count how many panels have been created.
+	public int panelCounter = 0;
+	private boolean panelExists = false;
+	private ArrayList<JTextPane> listTextArea;
+	private ArrayList<JScrollPane> listScroll;
+	private ArrayList<File> listFile;
 	// here we put the special container, the tools and its options
 	private JMenuBar menu;
 	private JMenu fileMenu, editMenu, selectMenu, lookMenu, skinMenu;
